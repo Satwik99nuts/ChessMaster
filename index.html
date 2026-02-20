@@ -56,6 +56,16 @@
           </div>
         </div>
       </div>
+      <!-- Player Name (always visible) -->
+      <div class="player-name-section">
+        <input
+          type="text"
+          id="player-name"
+          class="name-input"
+          placeholder="✏️ Enter your name (optional)"
+          maxlength="20"
+        />
+      </div>
 
       <div class="controls">
         <button id="btn-solo" class="btn primary">Solo (vs AI)</button>
@@ -66,34 +76,56 @@
         <button id="btn-reset" class="btn danger">Reset Game</button>
       </div>
 
-      <!-- Difficulty Selector -->
+      <!-- Game Setup Panel -->
       <div id="difficulty-panel" class="difficulty-panel hidden">
-        <h3>Choose your opponent</h3>
-        <div class="difficulty-grid">
-          <button class="diff-btn" data-elo="250" data-name="Martin">
-            <span class="diff-elo">250</span>
-            <span class="diff-name">Martin</span>
-          </button>
-          <button class="diff-btn" data-elo="500" data-name="Elena">
-            <span class="diff-elo">500</span>
-            <span class="diff-name">Elena</span>
-          </button>
-          <button class="diff-btn" data-elo="800" data-name="Danny">
-            <span class="diff-elo">800</span>
-            <span class="diff-name">Danny</span>
-          </button>
-          <button class="diff-btn" data-elo="1100" data-name="Isabel">
-            <span class="diff-elo">1100</span>
-            <span class="diff-name">Isabel</span>
-          </button>
-          <button class="diff-btn" data-elo="1400" data-name="Li">
-            <span class="diff-elo">1400</span>
-            <span class="diff-name">Li</span>
-          </button>
-          <button class="diff-btn" data-elo="1800" data-name="Magnus">
-            <span class="diff-elo">1800</span>
-            <span class="diff-name">Magnus</span>
-          </button>
+        <!-- Color Choice -->
+        <div class="setup-section">
+          <label class="setup-label">Play as</label>
+          <div class="color-selector">
+            <button class="color-btn active" data-color="white">
+              <span class="color-piece">♔</span>
+              <span>White</span>
+            </button>
+            <button class="color-btn" data-color="random">
+              <span class="color-piece">🎲</span>
+              <span>Random</span>
+            </button>
+            <button class="color-btn" data-color="black">
+              <span class="color-piece">♚</span>
+              <span>Black</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Opponent Selection -->
+        <div class="setup-section">
+          <label class="setup-label">Choose your opponent</label>
+          <div class="difficulty-grid">
+            <button class="diff-btn" data-elo="250" data-name="Martin">
+              <span class="diff-elo">250</span>
+              <span class="diff-name">Martin</span>
+            </button>
+            <button class="diff-btn" data-elo="500" data-name="Elena">
+              <span class="diff-elo">500</span>
+              <span class="diff-name">Elena</span>
+            </button>
+            <button class="diff-btn" data-elo="800" data-name="Danny">
+              <span class="diff-elo">800</span>
+              <span class="diff-name">Danny</span>
+            </button>
+            <button class="diff-btn" data-elo="1100" data-name="Isabel">
+              <span class="diff-elo">1100</span>
+              <span class="diff-name">Isabel</span>
+            </button>
+            <button class="diff-btn" data-elo="1400" data-name="Li">
+              <span class="diff-elo">1400</span>
+              <span class="diff-name">Li</span>
+            </button>
+            <button class="diff-btn" data-elo="1800" data-name="Magnus">
+              <span class="diff-elo">1800</span>
+              <span class="diff-name">Magnus</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

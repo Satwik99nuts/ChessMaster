@@ -492,3 +492,93 @@ h1 {
   font-size: 0.8rem;
   opacity: 0.8;
 }
+
+/* Player Name (standalone) */
+.player-name-section {
+  margin-top: 12px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Setup Panel Sections */
+.setup-section {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.setup-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--highlight-color);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.optional-tag {
+  font-weight: 400;
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+.name-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.name-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.name-input:focus {
+  border-color: var(--highlight-color);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Color Selector */
+.color-selector {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.color-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+  font-size: 0.8rem;
+}
+
+.color-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.color-btn.active {
+  background: var(--primary-color);
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 12px rgba(106, 13, 173, 0.5);
+}
+
+.color-piece {
+  font-size: 1.5rem;
+}

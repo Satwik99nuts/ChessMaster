@@ -14,6 +14,10 @@ let gameMode = "pvp"; // 'pvp' or 'solo'
 let grabbedPiece = null;
 let capturedPieces = { w: [], b: [] }; // white and black captured pieces
 let moveCount = 0; // Full move counter
+let playerColor = "white"; // Which color the human plays
+let aiColor = "black"; // Which color the AI plays
+let boardFlipped = false; // Whether board is shown from black's perspective
+let playerName = "You"; // Player's display name
 let halfMoveClock = 0; // Half-move clock for 50-move rule / FEN
 
 // Stockfish Engine
@@ -316,8 +320,12 @@ function initGame() {
 
 function renderBoard() {
   boardElement.innerHTML = "";
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      // When board is flipped, render from black's perspective
+      const row = boardFlipped ? 7 - i : i;
+      const col = boardFlipped ? 7 - j : j;
+
       const square = document.createElement("div");
       square.classList.add("square");
       square.classList.add((row + col) % 2 === 0 ? "light" : "dark");
@@ -328,13 +336,13 @@ function renderBoard() {
       const pieceCode = board[row][col];
 
       // Add Coordinates
-      if (col === 0) {
+      if (j === 0) {
         const rank = document.createElement("div");
         rank.classList.add("coordinate", "rank");
         rank.innerText = 8 - row;
         square.appendChild(rank);
       }
-      if (row === 7) {
+      if (i === 7) {
         const file = document.createElement("div");
         file.classList.add("coordinate", "file");
         file.innerText = String.fromCharCode(97 + col);
@@ -752,7 +760,7 @@ function makeMove(move, promotionChoice = null) {
     fromPiece[1] === "p" &&
     (move.to.r === 0 || move.to.r === 7)
   ) {
-    if (gameMode === "solo" && turn === "black") {
+    if (gameMode === "solo" && turn === aiColor) {
       promotionChoice = "q";
     } else {
       pendingPromotion = move;
@@ -856,7 +864,7 @@ function makeMove(move, promotionChoice = null) {
       }
       isGameOver = true;
     } else {
-      if (gameMode === "solo" && turn === "black") {
+      if (gameMode === "solo" && turn === aiColor) {
         setTimeout(makeAIMove, 300);
       }
     }
@@ -1187,7 +1195,7 @@ function makeAIMove() {
       .then((uciMove) => {
         const coords = uciToCoords(uciMove);
         // Find the matching legal move in our system
-        const legalMoves = getLegalMoves("black");
+        const legalMoves = getLegalMoves(aiColor);
         const move = legalMoves.find(
           (m) =>
             m.from.r === coords.from.r &&
@@ -1216,8 +1224,13 @@ function makeAIMove() {
 
 // Fallback: use built-in minimax AI
 function fallbackAIMove(config) {
-  const moves = getLegalMoves("black");
+  const moves = getLegalMoves(aiColor);
   if (moves.length === 0) return;
+
+  const opponentColor = aiColor === "white" ? "black" : "white";
+  // When AI is white, it wants to minimize (negative is good for white in our eval)
+  // When AI is black, it wants to maximize (positive is good for black)
+  const aiIsBlack = aiColor === "black";
 
   let scoredMoves = moves.map((m) => {
     const newBoard = board.map((row) => [...row]);
@@ -1248,15 +1261,21 @@ function fallbackAIMove(config) {
       config.depth - 1,
       -Infinity,
       Infinity,
-      false,
-      "white",
+      !aiIsBlack, // if AI is black and just moved, next is white (maximizing=false)
+      opponentColor,
       newCR,
       newEP,
     );
     return { move: m, score };
   });
 
-  scoredMoves.sort((a, b) => b.score - a.score);
+  // Sort: AI wants best score for its color
+  // Black wants highest score, White wants lowest
+  if (aiIsBlack) {
+    scoredMoves.sort((a, b) => b.score - a.score);
+  } else {
+    scoredMoves.sort((a, b) => a.score - b.score);
+  }
 
   let chosenMove;
   if (Math.random() < config.blunderRate && scoredMoves.length > 1) {
@@ -1366,7 +1385,9 @@ function showModal(title, msg) {
 
 // Controls using event delegation or direct if IDs exist
 if (document.getElementById("btn-reset"))
-  document.getElementById("btn-reset").addEventListener("click", initGame);
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    initGame();
+  });
 if (document.getElementById("btn-solo"))
   document.getElementById("btn-solo").addEventListener("click", () => {
     const panel = document.getElementById("difficulty-panel");
@@ -1375,8 +1396,15 @@ if (document.getElementById("btn-solo"))
 if (document.getElementById("btn-pvp"))
   document.getElementById("btn-pvp").addEventListener("click", () => {
     gameMode = "pvp";
+    playerColor = "white";
+    aiColor = "black";
+    boardFlipped = false;
     const panel = document.getElementById("difficulty-panel");
     if (panel) panel.classList.add("hidden");
+    const nameInput = document.getElementById("player-name");
+    const name1 =
+      nameInput && nameInput.value.trim() ? nameInput.value.trim() : "Player 1";
+    document.getElementById("bottom-name").innerText = name1;
     document.getElementById("top-name").innerText = "Player 2";
     initGame();
   });
@@ -1385,16 +1413,82 @@ if (document.getElementById("modal-close"))
     modalOverlay.classList.add("hidden");
   });
 
-// Difficulty buttons
+// Player name input — hide on Enter
+const nameInput = document.getElementById("player-name");
+if (nameInput) {
+  nameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      if (name) {
+        playerName = name;
+        document.getElementById("bottom-name").innerText = playerName;
+      }
+      nameInput.parentElement.style.transition =
+        "opacity 0.3s, max-height 0.3s";
+      nameInput.parentElement.style.opacity = "0";
+      nameInput.parentElement.style.maxHeight = "0";
+      nameInput.parentElement.style.overflow = "hidden";
+      nameInput.parentElement.style.marginTop = "0";
+    }
+  });
+}
+
+// Color selector buttons
+document.querySelectorAll(".color-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document
+      .querySelectorAll(".color-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
+// Difficulty buttons — now reads color choice and player name
 document.querySelectorAll(".diff-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     aiElo = parseInt(btn.dataset.elo);
     gameMode = "solo";
     const config = ELO_CONFIG[aiElo];
-    document.getElementById("top-name").innerText = `${config.name} (${aiElo})`;
+
+    // Read player name
+    const nameInput = document.getElementById("player-name");
+    playerName =
+      nameInput && nameInput.value.trim() ? nameInput.value.trim() : "You";
+
+    // Read color choice
+    const colorBtn = document.querySelector(".color-btn.active");
+    let chosenColor = colorBtn ? colorBtn.dataset.color : "white";
+    if (chosenColor === "random") {
+      chosenColor = Math.random() < 0.5 ? "white" : "black";
+    }
+    playerColor = chosenColor;
+    aiColor = chosenColor === "white" ? "black" : "white";
+    boardFlipped = playerColor === "black";
+
+    // Update player names in UI
+    if (boardFlipped) {
+      // When flipped: top = You (black at top visually), bottom = AI
+      // Actually: top should be the opponent (AI), bottom should be the player
+      // When board is flipped, the player sees their pieces (black) at the bottom
+      document.getElementById("bottom-name").innerText = playerName;
+      document.getElementById("top-name").innerText =
+        `${config.name} (${aiElo})`;
+    } else {
+      document.getElementById("bottom-name").innerText = playerName;
+      document.getElementById("top-name").innerText =
+        `${config.name} (${aiElo})`;
+    }
+
     const panel = document.getElementById("difficulty-panel");
     if (panel) panel.classList.add("hidden");
+
     initGame();
+
+    // If AI is white, it goes first
+    if (aiColor === "white") {
+      setTimeout(makeAIMove, 500);
+    }
   });
 });
 
