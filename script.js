@@ -353,7 +353,26 @@ function renderBoard() {
         const piece = document.createElement("div");
         piece.classList.add("piece");
         piece.classList.add(pieceCode.startsWith("w") ? "white" : "black");
-        piece.innerText = PIECES[pieceCode[0]][pieceCode[1]];
+        if (
+          typeof window._pieceSet !== "undefined" &&
+          window._pieceSet !== "unicode" &&
+          typeof window._pieceSets !== "undefined" &&
+          window._pieceSets[window._pieceSet]
+        ) {
+          var svgN = pieceCode[0] + pieceCode[1].toUpperCase();
+          var img = document.createElement("img");
+          img.src = window._pieceSets[window._pieceSet].path + svgN + ".svg";
+          img.alt = "";
+          img.className = "piece-img";
+          img.draggable = false;
+          img.onerror = function () {
+            piece.innerHTML = "";
+            piece.innerText = PIECES[pieceCode[0]][pieceCode[1]];
+          };
+          piece.appendChild(img);
+        } else {
+          piece.innerText = PIECES[pieceCode[0]][pieceCode[1]];
+        }
 
         piece.draggable = true;
         piece.dataset.row = row;
@@ -1497,3 +1516,241 @@ document.querySelectorAll(".promo-piece").forEach((p) => {
 });
 
 initGame();
+
+/* =========================================================
+   THEME + PIECE-SET SYSTEM  (appended — no existing code touched)
+   ========================================================= */
+
+(function () {
+  "use strict";
+
+  /* ---- board colour themes ---- */
+  var BOARD_THEMES = {
+    classic: {
+      "--primary-color": "#6a0dad",
+      "--secondary-color": "#fcf6e5",
+      "--dark-square": "#764ba2",
+      "--light-square": "#fcf6e5",
+      "--highlight-color": "#ffd700",
+      "--bg-gradient": "linear-gradient(135deg,#2e0249 0%,#570a57 100%)",
+      "--text-color": "#ffffff",
+    },
+    wood: {
+      "--primary-color": "#8b4513",
+      "--secondary-color": "#f0d9b5",
+      "--dark-square": "#b58863",
+      "--light-square": "#f0d9b5",
+      "--highlight-color": "#ffcc00",
+      "--bg-gradient": "linear-gradient(135deg,#3e1f0d 0%,#5c2e0e 100%)",
+      "--text-color": "#f5e6d3",
+    },
+    ocean: {
+      "--primary-color": "#1a5276",
+      "--secondary-color": "#d4e6f1",
+      "--dark-square": "#2e86c1",
+      "--light-square": "#d4e6f1",
+      "--highlight-color": "#f39c12",
+      "--bg-gradient": "linear-gradient(135deg,#0c2461 0%,#1e3799 100%)",
+      "--text-color": "#ecf0f1",
+    },
+    forest: {
+      "--primary-color": "#2d6a2e",
+      "--secondary-color": "#eeeed2",
+      "--dark-square": "#769656",
+      "--light-square": "#eeeed2",
+      "--highlight-color": "#ffcc00",
+      "--bg-gradient": "linear-gradient(135deg,#1a3c1a 0%,#2d5a27 100%)",
+      "--text-color": "#f0f0e0",
+    },
+    midnight: {
+      "--primary-color": "#2c2c54",
+      "--secondary-color": "#4a4a5a",
+      "--dark-square": "#2c2c3a",
+      "--light-square": "#4a4a5a",
+      "--highlight-color": "#e056fd",
+      "--bg-gradient": "linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 100%)",
+      "--text-color": "#c8c8e0",
+    },
+    marble: {
+      "--primary-color": "#555555",
+      "--secondary-color": "#f5f5f5",
+      "--dark-square": "#a8a8a8",
+      "--light-square": "#f5f5f5",
+      "--highlight-color": "#e74c3c",
+      "--bg-gradient": "linear-gradient(135deg,#2c3e50 0%,#4a4a4a 100%)",
+      "--text-color": "#ecf0f1",
+    },
+  };
+
+  /* ---- piece colour overlays (unicode only) ---- */
+  var PIECE_STYLES = {
+    default: {
+      wc: "#b8860b",
+      bc: "#1a1a1a",
+      ws: "0 0 1px rgba(0,0,0,.2)",
+      bs: "0 0 1px rgba(255,255,255,.2)",
+      f: "drop-shadow(0 2px 3px rgba(0,0,0,.4))",
+    },
+    neon: {
+      wc: "#00ff88",
+      bc: "#ff3366",
+      ws: "0 0 8px #00ff88,0 0 16px rgba(0,255,136,.3)",
+      bs: "0 0 8px #ff3366,0 0 16px rgba(255,51,102,.3)",
+      f: "none",
+    },
+    minimal: {
+      wc: "#ffffff",
+      bc: "#333333",
+      ws: "none",
+      bs: "none",
+      f: "none",
+    },
+  };
+
+  /* ---- piece sets (local SVG assets) ---- */
+  var PSETS = {
+    unicode: { name: "Unicode", type: "unicode" },
+    cburnett: {
+      name: "Cburnett",
+      type: "svg",
+      path: "public/img/pieces/cburnett/",
+    },
+    merida: { name: "Merida", type: "svg", path: "public/img/pieces/merida/" },
+    alpha: { name: "Alpha", type: "svg", path: "public/img/pieces/alpha/" },
+    staunty: {
+      name: "Staunton",
+      type: "svg",
+      path: "public/img/pieces/staunty/",
+    },
+    maestro: { name: "Neo", type: "svg", path: "public/img/pieces/maestro/" },
+    california: {
+      name: "California",
+      type: "svg",
+      path: "public/img/pieces/california/",
+    },
+    cardinal: {
+      name: "Cardinal",
+      type: "svg",
+      path: "public/img/pieces/cardinal/",
+    },
+    tatiana: {
+      name: "Tatiana",
+      type: "svg",
+      path: "public/img/pieces/tatiana/",
+    },
+    pixel: { name: "Pixel", type: "svg", path: "public/img/pieces/pixel/" },
+    horsey: { name: "Horsey", type: "svg", path: "public/img/pieces/horsey/" },
+  };
+  // expose to renderBoard via window globals
+  window._pieceSets = PSETS;
+  window._pieceSet = "unicode";
+
+  /* ---- state ---- */
+  var curTheme = "classic",
+    curStyle = "default";
+
+  function applyBoardTheme(name) {
+    var t = BOARD_THEMES[name];
+    if (!t) return;
+    curTheme = name;
+    var root = document.documentElement;
+    for (var k in t) root.style.setProperty(k, t[k]);
+    document.querySelectorAll(".theme-card").forEach(function (c) {
+      c.classList.toggle("active", c.dataset.theme === name);
+    });
+    localStorage.setItem("chess-theme", name);
+  }
+
+  function applyPieceStyle(name) {
+    var s = PIECE_STYLES[name];
+    if (!s) return;
+    curStyle = name;
+    var r = document.documentElement;
+    r.style.setProperty("--piece-white-color", s.wc);
+    r.style.setProperty("--piece-black-color", s.bc);
+    r.style.setProperty("--piece-white-shadow", s.ws);
+    r.style.setProperty("--piece-black-shadow", s.bs);
+    r.style.setProperty("--piece-filter", s.f);
+    document.querySelectorAll(".piece-style-btn").forEach(function (b) {
+      b.classList.toggle("active", b.dataset.style === name);
+    });
+    localStorage.setItem("chess-piece-style", name);
+    renderBoard();
+  }
+
+  function applyPieceSet(name) {
+    if (!PSETS[name]) return;
+    window._pieceSet = name;
+    document.querySelectorAll(".pieceset-card").forEach(function (c) {
+      c.classList.toggle("active", c.dataset.pieceset === name);
+    });
+    localStorage.setItem("chess-piece-set", name);
+    renderBoard();
+  }
+
+  /* ---- panel toggle ---- */
+  document
+    .getElementById("theme-toggle")
+    .addEventListener("click", function () {
+      document.getElementById("theme-panel").classList.toggle("hidden");
+    });
+  document
+    .getElementById("theme-panel-close")
+    .addEventListener("click", function () {
+      document.getElementById("theme-panel").classList.add("hidden");
+    });
+
+  /* ---- board theme cards ---- */
+  document.querySelectorAll(".theme-card").forEach(function (card) {
+    card.addEventListener("click", function () {
+      applyBoardTheme(card.dataset.theme);
+    });
+  });
+
+  /* ---- piece style buttons ---- */
+  document.querySelectorAll(".piece-style-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      applyPieceStyle(btn.dataset.style);
+    });
+  });
+
+  /* ---- build piece-set grid ---- */
+  var grid = document.getElementById("pieceset-grid");
+  if (grid) {
+    for (var key in PSETS) {
+      (function (k, set) {
+        var btn = document.createElement("button");
+        btn.className =
+          "pieceset-card" + (k === window._pieceSet ? " active" : "");
+        btn.dataset.pieceset = k;
+        if (set.type === "unicode") {
+          btn.innerHTML =
+            '<span class="pieceset-preview-text">\u265E</span><span class="pieceset-label">' +
+            set.name +
+            "</span>";
+        } else {
+          btn.innerHTML =
+            '<img class="pieceset-preview-img" src="' +
+            set.path +
+            'bN.svg" alt="' +
+            set.name +
+            '" draggable="false" onerror="this.outerHTML=\'<span class=pieceset-preview-text>\u265E</span>\'"><span class="pieceset-label">' +
+            set.name +
+            "</span>";
+        }
+        btn.addEventListener("click", function () {
+          applyPieceSet(k);
+        });
+        grid.appendChild(btn);
+      })(key, PSETS[key]);
+    }
+  }
+
+  /* ---- restore saved prefs ---- */
+  var st = localStorage.getItem("chess-theme");
+  var ss = localStorage.getItem("chess-piece-style");
+  var sp = localStorage.getItem("chess-piece-set");
+  if (st && BOARD_THEMES[st]) applyBoardTheme(st);
+  if (ss && PIECE_STYLES[ss]) applyPieceStyle(ss);
+  if (sp && PSETS[sp]) applyPieceSet(sp);
+})();

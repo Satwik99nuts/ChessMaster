@@ -16,6 +16,66 @@
     />
   </head>
   <body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle-btn" title="Theme">🎨</button>
+    <!-- Theme Panel -->
+    <div id="theme-panel" class="theme-panel hidden">
+      <div class="theme-panel-header">
+        <h3>🎨 Themes</h3>
+        <button id="theme-panel-close" class="theme-close-btn">&times;</button>
+      </div>
+      <div class="theme-section">
+        <h4 class="theme-section-title">Board Theme</h4>
+        <div class="theme-grid">
+          <button class="theme-card active" data-theme="classic">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #fcf6e5"></span
+              ><span class="tp-dark" style="background: #764ba2"></span>
+            </div>
+            <span class="theme-label">Classic</span>
+          </button>
+          <button class="theme-card" data-theme="wood">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #f0d9b5"></span
+              ><span class="tp-dark" style="background: #b58863"></span>
+            </div>
+            <span class="theme-label">Wood</span>
+          </button>
+          <button class="theme-card" data-theme="ocean">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #d4e6f1"></span
+              ><span class="tp-dark" style="background: #2e86c1"></span>
+            </div>
+            <span class="theme-label">Ocean</span>
+          </button>
+          <button class="theme-card" data-theme="forest">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #eeeed2"></span
+              ><span class="tp-dark" style="background: #769656"></span>
+            </div>
+            <span class="theme-label">Forest</span>
+          </button>
+          <button class="theme-card" data-theme="midnight">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #4a4a5a"></span
+              ><span class="tp-dark" style="background: #2c2c3a"></span>
+            </div>
+            <span class="theme-label">Midnight</span>
+          </button>
+          <button class="theme-card" data-theme="marble">
+            <div class="theme-preview">
+              <span class="tp-light" style="background: #f5f5f5"></span
+              ><span class="tp-dark" style="background: #a8a8a8"></span>
+            </div>
+            <span class="theme-label">Marble</span>
+          </button>
+        </div>
+      </div>
+      <div class="theme-section">
+        <h4 class="theme-section-title">Piece Set</h4>
+        <div class="pieceset-grid" id="pieceset-grid"></div>
+      </div>
+    </div>
     <div class="app-container">
       <header>
         <h1>Chess Master</h1>
