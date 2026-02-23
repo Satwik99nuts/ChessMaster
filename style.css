@@ -154,7 +154,7 @@ h1 {
   background-color: var(--light-square);
   color: var(
     --dark-square
-  ); /* For piece contrast if needed, though we use SVGs/Unicodes often */
+  ); /* For piece contrast if needed, though we are using SVGs/Unicodes often */
 }
 
 .dark {
